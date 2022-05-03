@@ -5,15 +5,13 @@ import './App.css'
 const WINNING_COMPS = [
   //FILAS
   [0,1,2],[3,4,5],[6,7,8],
+
   //COLUMNAS
   [0,3,6], [1,4,7],[2,5,8],
+
   // DIAGONAL
   [0,4,8], [2,4,6]
 ]
-
-//Para crear nuevos arrays y simular que estamos limpianzo o reiniciando
-// el juego
-const INITIAL_STATE = new Array(9).fill("")
 
 enum Player {
   X = "X",
@@ -24,11 +22,20 @@ enum Player {
 enum Status{
   Playing = "PLAYING",
   Draw = "DRAW",
-  XWON = "XWON",
-  OWON = "OWON",
-  reset = "",
   Finished = "FINISHED"
 }
+
+//Para crear nuevos arrays y simular que estamos limpianzo o reiniciando
+// el juego
+const INITIAL_STATE = new Array(9).fill("")
+
+const INITIAL_SCOREBOARD = {
+  [Player.X]: 0, 
+  [Player.O]: 0, 
+  [Player.DRAW]: 0 
+}
+
+
 
 function App() {
 
@@ -40,7 +47,7 @@ function App() {
   const [status, setStatus] = useState<Status>(Status.Playing)
   // contador de score
   const [scoreboard, setScoreboard] = 
-  useState<Record<Player, number>>({[Player.X]: 0, [Player.O]: 0, [Player.DRAW]: 0 } )
+  useState<Record<Player, number>>(INITIAL_SCOREBOARD)
 
   // funcion click
   const handleClick = (index: number) => {
