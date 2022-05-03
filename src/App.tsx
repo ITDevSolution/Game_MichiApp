@@ -26,7 +26,8 @@ enum Status{
   Draw = "DRAW",
   XWON = "XWON",
   OWON = "OWON",
-  reset = ""
+  reset = "",
+  Finished = "FINISHED"
 }
 
 function App() {
@@ -57,27 +58,19 @@ function App() {
       const hasWon = WINNING_COMPS.some(comp => comp.every(cell => turn === draft[cell]))
 
       if(hasWon){
-        if(turn === Player.X){
-          setStatus(Status.XWON)
-            setScoreboard(score => ({
-              ...score,
-              [Player.X]: score[Player.X] + 1
-            }))
-        }else if(turn === Player.O){
-          setStatus(Status.OWON)
+        setStatus(Status.Finished)
           setScoreboard(score => ({
             ...score,
-            [Player.O]: score[Player.O] + 1
+            [turn]: score[turn] + 1
           }))
-        }
-      }
-       if (!draft.some(cell => cell === "")) {
+      }else if (!draft.some(cell => cell === "")) {
         setStatus(Status.Draw)
         setScoreboard(score => ({
           ...score,
           [Player.DRAW]: score[Player.DRAW] + 1
         }))
       }
+      
 
       //setear el estado al hacer click pintará {X} o {O}
       setTurn( turn => turn === Player.X ? Player.O : Player.X)
@@ -124,8 +117,7 @@ function App() {
         <section>
           <article role="alert">
             { status === Status.Draw && "Empate!" }
-            { status === Status.OWON && "GANO O!" }
-            { status === Status.XWON && "GANO X!" }
+            { status === Status.Finished && `Gano ${turn === Player.O ? "X" : "O"}`}
           </article>
           <button onClick={handleReset}>Reiniciar</button>
         </section>
