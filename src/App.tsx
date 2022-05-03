@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 
 // WINNING COMPOSICION
@@ -46,13 +46,39 @@ function App() {
 
     if(status !== Status.Playing) return
 
-    //creo nuevo array para no mutar
-    const draft = [...cells]
-
     //asigno en el index de cada elemento el turn actual y
     // si el campo esta vacio realizo las siguientes acciones:
-    if(draft[index] === ""){
+    if(cells[index] === ""){
+
+      //creo nuevo array para no mutar
+      const draft = [...cells]
       draft[index] = turn
+
+      const hasWon = WINNING_COMPS.some(comp => comp.every(cell => turn === draft[cell]))
+
+      if(hasWon){
+        if(turn === Player.X){
+          setStatus(Status.XWON)
+            setScoreboard(score => ({
+              ...score,
+              [Player.X]: score[Player.X] + 1
+            }))
+        }else if(turn === Player.O){
+          setStatus(Status.OWON)
+          setScoreboard(score => ({
+            ...score,
+            [Player.O]: score[Player.O] + 1
+          }))
+        }
+      }
+       if (!draft.some(cell => cell === "")) {
+        setStatus(Status.Draw)
+        setScoreboard(score => ({
+          ...score,
+          [Player.DRAW]: score[Player.DRAW] + 1
+        }))
+      }
+
       //setear el estado al hacer click pintará {X} o {O}
       setTurn( turn => turn === Player.X ? Player.O : Player.X)
       // setea el estado de cells para almacenar el turn actual 
@@ -67,58 +93,7 @@ function App() {
     setStatus(Status.Playing)
   }
   
-  // Verificar si alguien cambio la celda o ya no hay mas celdas
-  useEffect( () => {
-
-    let winner: Player | undefined
-    // verificar si alguie gano
-    for( let player of [Player.X, Player.O]) {
-      const hasWon = 
-      WINNING_COMPS.some(comp => comp.every(cell => player === cells[cell]))
-      
-      if(hasWon) {
-        winner = player
-      }
-    }
-    //Asignamos winner que es el resultado del for que se evaluo para el
-    // ganador del juego, puede ser X, O : winner = X u O
-    // Player es el enum que definimos y este va a mostrar la propiedad
-    // con winner para verificar quien es : X u O
-    const stateGame = Player[winner]
-    
-    // Evaluamos si todas las casilla estan completadas.
-    // observacion: tambien se pudo evaluar con !cells.some => esto indica
-    // que si no hay o no existe una celda en el array entonces significa
-    // que todas estan llenas y por ende es un empate.
-
-    const gameDraw = !cells.some(cell => cell === "")
-
-    if(stateGame === Player.X){
-      setStatus(Status.XWON)
-      setScoreboard(score => ({
-        ...score,
-        [Player.X]: score[Player.X] + 1
-      }))
-    }else if(stateGame === Player.O){
-      setStatus(Status.OWON)
-      setScoreboard(score => ({
-        ...score,
-        [Player.O]: score[Player.O] + 1
-      }))
-    }else if (!cells.some(cell => cell === "")) {
-      setStatus(Status.Draw)
-      setScoreboard(score => ({
-        ...score,
-        [Player.DRAW]: score[Player.DRAW] + 1
-      }))
-    }
-
-    // stateGame === Player.X ? console.log("Winner is X") :
-    // stateGame === Player.O ? console.log("Winner is O") :
-    // gameDraw && console.log("Draw!")
-    
   
-  },[cells])
 
   return (
     <main>
